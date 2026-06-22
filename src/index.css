@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --border-card: rgba(255, 255, 255, 0.1);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  
+  --dtu-red: #ef4444;
+  --dtu-blue: #3b82f6;
+  --dtu-yellow: #eab308;
+  --dtu-green: #22c55e;
+  
+  --glass-blur: blur(12px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  --nav-height: 70px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  /* Cool animated background */
+  background: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+              radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.15), transparent 25%);
+  background-color: var(--bg-dark);
+  background-attachment: fixed;
+  padding-bottom: calc(var(--nav-height) + 20px);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+}
+
+.glass-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+}
+
+.glass-button.primary {
+  background: linear-gradient(135deg, var(--dtu-blue), #2563eb);
+  border: none;
+}
+
+.glass-button.danger {
+  background: linear-gradient(135deg, var(--dtu-red), #dc2626);
+  border: none;
+}
+
+/* Utility classes for Monopoly properties */
+.prop-brown { border-top: 8px solid #8b4513; }
+.prop-lightblue { border-top: 8px solid #87ceeb; }
+.prop-pink { border-top: 8px solid #ff69b4; }
+.prop-orange { border-top: 8px solid #ff8c00; }
+.prop-red { border-top: 8px solid #ff0000; }
+.prop-yellow { border-top: 8px solid #ffd700; }
+.prop-green { border-top: 8px solid #008000; }
+.prop-darkblue { border-top: 8px solid #00008b; }
