@@ -29,9 +29,8 @@ body {
   background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
-  /* Cool animated background */
-  background: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
-              radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.15), transparent 25%);
+  /* Campus Background Image */
+  background: url('/bg-campus.png') center/cover no-repeat;
   background-color: var(--bg-dark);
   background-attachment: fixed;
   padding-bottom: calc(var(--nav-height) + 20px);
