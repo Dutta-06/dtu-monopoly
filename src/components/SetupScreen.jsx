@@ -25,16 +25,11 @@ const SetupScreen = () => {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', gap: '30px' }}>
       
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ 
-          background: 'linear-gradient(to right, #ef4444, #3b82f6)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          fontSize: '3rem',
-          fontWeight: 800,
-          margin: '0 0 10px 0'
-        }}>
-          DTU MONOPOLY
-        </h1>
+        <img 
+          src="/header-logo.png" 
+          alt="DTU Monopoly" 
+          style={{ width: '100%', maxWidth: '400px', margin: '0 0 10px 0' }} 
+        />
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>judge mat krna bhai jaldbazi me bnaya hai</p>
       </div>
 
