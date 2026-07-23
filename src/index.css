@@ -1,92 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
-
-:root {
-  --bg-dark: #0f172a;
-  --bg-card: rgba(30, 41, 59, 0.7);
-  --border-card: rgba(255, 255, 255, 0.1);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  
-  --dtu-red: #ef4444;
-  --dtu-blue: #3b82f6;
-  --dtu-yellow: #eab308;
-  --dtu-green: #22c55e;
-  
-  --glass-blur: blur(12px);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  
-  --nav-height: 70px;
-}
-
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  min-height: 100vh;
-  /* Campus Background Image */
-  background: url('/bg-campus.png') center/cover no-repeat;
-  background-color: var(--bg-dark);
-  background-attachment: fixed;
-  padding-bottom: calc(var(--nav-height) + 20px);
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  overflow: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', sans-serif;
+.construction-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
-/* Glassmorphism utility */
-.glass {
-  background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--glass-shadow);
+.construction-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6); /* Dark overlay for text readability */
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(20, 20, 20, 0.7);
+  border: 2px solid rgba(255, 215, 0, 0.5); /* Subtle gold/yellow border */
   border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  max-width: 90%;
 }
 
-.glass-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+h1 {
+  color: #FFD700; /* Yellow warning color */
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.4);
+  line-height: 1.2;
 }
 
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
 }
-
-.glass-button:active {
-  transform: translateY(0);
-}
-
-.glass-button.primary {
-  background: linear-gradient(135deg, var(--dtu-blue), #2563eb);
-  border: none;
-}
-
-.glass-button.danger {
-  background: linear-gradient(135deg, var(--dtu-red), #dc2626);
-  border: none;
-}
-
-/* Utility classes for Monopoly properties */
-.prop-brown { border-top: 8px solid #8b4513; }
-.prop-lightblue { border-top: 8px solid #87ceeb; }
-.prop-pink { border-top: 8px solid #ff69b4; }
-.prop-orange { border-top: 8px solid #ff8c00; }
-.prop-red { border-top: 8px solid #ff0000; }
-.prop-yellow { border-top: 8px solid #ffd700; }
-.prop-green { border-top: 8px solid #008000; }
-.prop-darkblue { border-top: 8px solid #00008b; }
