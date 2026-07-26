@@ -117,24 +117,22 @@ export const GameProvider = ({ children }) => {
   };
 
   const handleBankruptcy = (playerId) => {
-    // Return properties to bank
-    setPropertyOwnership(prev => {
-      const newOwn = { ...prev };
-      Object.keys(newOwn).forEach(k => {
-        if (newOwn[k] === playerId) delete newOwn[k];
+    // Return properties to bank and reset their levels
+    setPropertyOwnership(prevOwn => {
+      const newOwn = { ...prevOwn };
+      setPropertyLevels(prevLvls => {
+        const newLvls = { ...prevLvls };
+        Object.keys(prevOwn).forEach(k => {
+          if (prevOwn[k] === playerId) {
+            delete newOwn[k];
+            delete newLvls[k];
+          }
+        });
+        return newLvls;
       });
       return newOwn;
     });
-    setPropertyLevels(prev => {
-      const newLvls = { ...prev };
-      // we don't have owner info in levels directly, but since ownership is reset, we should also reset levels
-      // to be safe, let's just reset all levels for properties owned by this player
-      // wait, we can just look at propertyOwnership
-      Object.keys(propertyOwnership).forEach(k => {
-        if (propertyOwnership[k] === playerId) delete newLvls[k];
-      });
-      return newLvls;
-    });
+
     setPlayers(prev => {
       const updated = prev.map(p => p.id === playerId ? { ...p, balance: 0, isBankrupt: true } : p);
       const active = updated.filter(p => !p.isBankrupt);
@@ -147,33 +145,31 @@ export const GameProvider = ({ children }) => {
 
   // Safe balance updater that returns true if successful, false if bankrupt
   const updateBalance = (playerId, amount) => {
-    let success = true;
-    setPlayers(prev => prev.map(p => {
-      if (p.id === playerId) {
-        if (p.balance + amount < 0) {
-          success = false;
-          return p; // don't update yet, handleBankruptcy will do it
-        }
-        return { ...p, balance: p.balance + amount };
-      }
-      return p;
-    }));
-    
-    if (!success) {
+    const targetPlayer = players.find(p => p.id === playerId);
+    if (!targetPlayer) return false;
+
+    if (targetPlayer.balance + amount < 0) {
       handleBankruptcy(playerId);
-      const player = players.find(p => p.id === playerId);
       setPendingAction({
         type: 'info',
         title: 'BANKRUPT!',
-        message: `${player.name} went bankrupt and is eliminated from the game!`,
+        message: `${targetPlayer.name} went bankrupt and is eliminated from the game! All their properties have been returned to the bank.`,
         confirmText: 'Aww man...',
         onConfirm: () => {
           nextTurn();
           setPendingAction(null);
         }
       });
+      return false;
     }
-    return success;
+
+    setPlayers(prev => prev.map(p => {
+      if (p.id === playerId) {
+        return { ...p, balance: p.balance + amount };
+      }
+      return p;
+    }));
+    return true;
   };
 
   const buyProperty = (playerId, spaceId, price) => {
@@ -194,9 +190,11 @@ export const GameProvider = ({ children }) => {
   };
 
   const payRent = (fromPlayerId, toPlayerId, amount) => {
-    if (updateBalance(fromPlayerId, -amount)) {
+    const success = updateBalance(fromPlayerId, -amount);
+    if (success) {
       updateBalance(toPlayerId, amount);
       nextTurn();
+      setPendingAction(null);
     }
   };
 
@@ -204,16 +202,16 @@ export const GameProvider = ({ children }) => {
     if (!cardData) { nextTurn(); return; }
 
     const performEffect = () => {
+      let survived = true;
       if (cardData.type === 'pay') {
-        if (updateBalance(player.id, -cardData.amount)) nextTurn();
+        survived = updateBalance(player.id, -cardData.amount);
+        if (survived) nextTurn();
       } else if (cardData.type === 'collect') {
         updateBalance(player.id, cardData.amount);
         nextTurn();
       } else if (cardData.type === 'move_absolute') {
         let passedGo = false;
         if (cardData.position === 0 && player.position > 0) passedGo = true; // "Advance to Go"
-        // Wait, for simplicity, if moving absolutely, don't trigger full executeMove again unless needed.
-        // Let's just update position and end turn.
         if (passedGo) updateBalance(player.id, 200);
         setPlayers(prev => prev.map(p => p.id === player.id ? { ...p, position: cardData.position, inJail: !!cardData.inJail } : p));
         nextTurn();
@@ -221,21 +219,21 @@ export const GameProvider = ({ children }) => {
         let newPos = player.position + cardData.amount;
         if (newPos < 0) newPos += 40;
         setPlayers(prev => prev.map(p => p.id === player.id ? { ...p, position: newPos } : p));
-        nextTurn(); // Simple end turn to avoid infinite loops
+        nextTurn();
       } else if (cardData.type === 'pay_all') {
-        let ok = updateBalance(player.id, -(cardData.amount * (players.filter(p=>!p.isBankrupt).length - 1)));
-        if (ok) {
+        let amountNeeded = cardData.amount * (players.filter(p=>!p.isBankrupt).length - 1);
+        survived = updateBalance(player.id, -amountNeeded);
+        if (survived) {
           players.forEach(p => {
             if (!p.isBankrupt && p.id !== player.id) updateBalance(p.id, cardData.amount);
           });
           nextTurn();
         }
       } else if (cardData.type === 'collect_all') {
-        // Collect from everyone
         let totalCollected = 0;
         players.forEach(p => {
           if (!p.isBankrupt && p.id !== player.id) {
-            updateBalance(p.id, -cardData.amount); // Simplification: assuming others don't go bankrupt from M10
+            updateBalance(p.id, -cardData.amount);
             totalCollected += cardData.amount;
           }
         });
@@ -244,7 +242,7 @@ export const GameProvider = ({ children }) => {
       } else {
         nextTurn();
       }
-      setPendingAction(null);
+      if (survived) setPendingAction(null);
     };
 
     setPendingAction({
@@ -345,7 +343,14 @@ export const GameProvider = ({ children }) => {
           title: `Landed on ${space.name}`,
           message: `${goMessage}Owned by ${owner.name} (Level ${level}). You paid M${rent} in rent!`,
           confirmText: 'Pay & End Turn',
-          onConfirm: () => { payRent(player.id, owner.id, rent); setPendingAction(null); }
+          onConfirm: () => { 
+            const success = updateBalance(player.id, -rent);
+            if (success) {
+              updateBalance(owner.id, rent);
+              nextTurn();
+              setPendingAction(null);
+            }
+          }
         });
       }
     } else if (space.type === 'tax') {
@@ -355,7 +360,13 @@ export const GameProvider = ({ children }) => {
         title: `Tax: ${space.name}`,
         message: `${goMessage}Pay M${space.amount}.`,
         confirmText: 'Pay & End Turn',
-        onConfirm: () => { if (updateBalance(player.id, -space.amount)) nextTurn(); setPendingAction(null); }
+        onConfirm: () => { 
+          const success = updateBalance(player.id, -space.amount);
+          if (success) {
+            nextTurn();
+            setPendingAction(null);
+          }
+        }
       });
     } else if (space.type === 'gotojail') {
       setPendingAction({
