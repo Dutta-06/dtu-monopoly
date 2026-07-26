@@ -26,10 +26,12 @@ const PlayerCard = ({ player, position, isMobile }) => {
   const cornerStyles = isMobile ? {
     position: 'relative',
     width: '100%',
-    padding: '10px',
+    minWidth: 0,
+    boxSizing: 'border-box',
+    padding: '8px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '4px',
     zIndex: 10,
     border: isBankrupt ? '1px solid #334155' : (isCurrentTurn ? '2px solid var(--dtu-yellow)' : '1px solid var(--border-card)'),
     boxShadow: isBankrupt ? 'none' : (isCurrentTurn ? '0 0 15px rgba(234, 179, 8, 0.4)' : 'var(--glass-shadow)'),
@@ -83,7 +85,7 @@ const PlayerCard = ({ player, position, isMobile }) => {
         M{player.balance}
       </div>
 
-      <div style={{ display: 'flex', gap: '4px' }}>
+      <div style={{ display: 'flex', gap: '4px', width: '100%', boxSizing: 'border-box' }}>
         <input
           type="number"
           placeholder="Adjust M"
@@ -91,9 +93,17 @@ const PlayerCard = ({ player, position, isMobile }) => {
           onChange={(e) => setAmount(e.target.value)}
           disabled={isBankrupt}
           style={{
-            width: '100%', padding: '4px 6px', borderRadius: '6px',
-            background: 'var(--bg-dark)', border: '1px solid var(--border-card)',
-            color: 'white', outline: 'none', fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)'
+            minWidth: 0,
+            flex: 1,
+            width: '100%',
+            padding: '4px 6px',
+            borderRadius: '6px',
+            background: 'var(--bg-dark)',
+            border: '1px solid var(--border-card)',
+            color: 'white',
+            outline: 'none',
+            fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
+            boxSizing: 'border-box'
           }}
         />
         <button disabled={isBankrupt} onClick={() => handleTransaction(false)} style={{ background: 'rgba(239,68,68,0.2)', border: '1px solid var(--dtu-red)', color: 'white', borderRadius: '6px', padding: '0 6px', cursor: 'pointer', flexShrink: 0 }}><Minus size={12} /></button>

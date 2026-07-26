@@ -23,23 +23,27 @@ const MainBoard = () => {
   return (
     <div style={{
       position: 'relative',
-      width: '100vw',
-      height: '100vh',
+      width: '100%',
+      maxWidth: '100vw',
+      minHeight: '100vh',
       overflow: isMobile ? 'auto' : 'hidden',
       overflowX: 'hidden',
+      boxSizing: 'border-box',
       display: isMobile ? 'flex' : 'block',
       flexDirection: isMobile ? 'column' : 'row',
-      padding: isMobile ? '12px 12px 85px 12px' : 0
+      padding: isMobile ? '8px 8px 85px 8px' : 0
     }}>
 
       {/* Players Rendering: Mobile 2-Column Top Grid vs Desktop 4-Corners */}
       {isMobile ? (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: players.length > 1 ? 'repeat(2, 1fr)' : '1fr',
-          gap: '8px',
+          gridTemplateColumns: players.length > 1 ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
+          gap: '6px',
           width: '100%',
-          marginBottom: '16px',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          marginBottom: '10px',
           zIndex: 10
         }}>
           {players.map((player, index) => (
@@ -109,15 +113,18 @@ const MainBoard = () => {
         bottom: 0,
         left: 0,
         right: 0,
+        width: '100%',
+        maxWidth: '100vw',
+        boxSizing: 'border-box',
         background: 'rgba(15, 23, 42, 0.95)',
         backdropFilter: 'blur(12px)',
         borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-        padding: '10px 16px',
-        paddingBottom: 'max(10px, env(safe-area-inset-bottom, 10px))',
+        padding: '8px 10px',
+        paddingBottom: 'max(8px, env(safe-area-inset-bottom, 8px))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '12px',
+        gap: '8px',
         zIndex: 100
       } : {
         position: 'absolute',
@@ -135,29 +142,35 @@ const MainBoard = () => {
           className="glass-button"
           onClick={() => setShowProperties(true)}
           style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            fontSize: isMobile ? '0.9rem' : 'clamp(0.8rem, 2vw, 1.1rem)',
-            padding: isMobile ? '10px 16px' : 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: isMobile ? '0.78rem' : 'clamp(0.8rem, 2vw, 1.1rem)',
+            padding: isMobile ? '8px 10px' : 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
             flex: isMobile ? 1 : 'initial',
+            minWidth: 0,
+            whiteSpace: 'nowrap',
+            boxSizing: 'border-box',
             justifyContent: 'center'
           }}
         >
-          <Map size={18} />
+          <Map size={16} />
           Property Guide
         </button>
         <button
           className="glass-button"
           onClick={endGame}
           style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            fontSize: isMobile ? '0.9rem' : 'clamp(0.8rem, 2vw, 1.1rem)',
-            padding: isMobile ? '10px 16px' : 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
+            display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: isMobile ? '0.78rem' : 'clamp(0.8rem, 2vw, 1.1rem)',
+            padding: isMobile ? '8px 10px' : 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
             border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171',
             flex: isMobile ? 1 : 'initial',
+            minWidth: 0,
+            whiteSpace: 'nowrap',
+            boxSizing: 'border-box',
             justifyContent: 'center'
           }}
         >
-          <Trophy size={18} />
+          <Trophy size={16} />
           End Game & Results
         </button>
       </div>

@@ -174,3 +174,14 @@ h1, h2, h3, h4, h5, h6 {
     --dice-size: clamp(48px, 8vw, 72px);
   }
 }
+
+@keyframes fadeInMobile {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

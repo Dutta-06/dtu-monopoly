@@ -295,7 +295,7 @@ const SetupScreen = () => {
         width: '100%',
         maxWidth: isMobile ? '260px' : '460px',
         margin: isMobile ? '0 auto 6px auto' : 0,
-        animation: 'zoomInHeader 2.4s cubic-bezier(0.16, 1, 0.3, 1) both'
+        animation: isMobile ? 'fadeInMobile 0.8s ease both' : 'zoomInHeader 2.4s cubic-bezier(0.16, 1, 0.3, 1) both'
       }}>
         <img 
           src="/header-logo.png" 
@@ -320,13 +320,13 @@ const SetupScreen = () => {
         alignItems: 'center',
         gap: isMobile ? '14px' : '20px',
         zIndex: 15,
-        animation: 'fadeInRegistration 1.4s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both'
+        animation: isMobile ? 'fadeInMobile 0.8s ease 0.2s both' : 'fadeInRegistration 1.4s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both'
       }}>
         {/* Editorial Title - Who's Playing? (Lifted Higher) */}
         <h2 style={{
           margin: '0 0 18px 0',
-          marginTop: '-55px',
-          fontSize: '2.4rem',
+          marginTop: isMobile ? '0px' : '-55px',
+          fontSize: isMobile ? '2rem' : '2.4rem',
           fontWeight: '900',
           fontFamily: "'Playfair Display', 'Book Antiqua', 'Palatino Linotype', serif",
           color: '#000000',
