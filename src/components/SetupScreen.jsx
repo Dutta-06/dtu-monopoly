@@ -481,23 +481,62 @@ const SetupScreen = () => {
           })}
         </div>
 
-        {/* Add Player Option */}
-        {playerCount < 4 && (
+        {/* Buttons row: Add Player & Custom Property Prices */}
+        <div style={{
+          display: 'flex',
+          flexDirection: isLandscape && playerCount < 4 ? 'row' : 'column',
+          gap: '10px',
+          width: '100%',
+          marginBottom: isLandscape ? '8px' : '15px'
+        }}>
+          {playerCount < 4 && (
+            <button
+              onClick={() => {
+                setPlayerCount(playerCount + 1);
+              }}
+              style={{
+                background: 'rgba(0, 0, 0, 0.75)',
+                border: '1px dashed rgba(255, 255, 255, 0.4)',
+                color: '#ffffff',
+                fontFamily: "'Playfair Display', serif",
+                fontWeight: '700',
+                fontSize: isLandscape ? '0.85rem' : '0.95rem',
+                padding: isLandscape ? '8px 16px' : '12px 24px',
+                borderRadius: '0px',
+                cursor: 'pointer',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                flex: 1,
+                transition: 'all 0.2s ease',
+                boxShadow: '0 5px 15px rgba(0,0,0,0.5)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(234, 179, 8, 0.15)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
+              }}
+            >
+              + Add Player
+            </button>
+          )}
+
+          {/* Custom Property Prices / House Rules Button */}
           <button
-            onClick={() => setPlayerCount(prev => Math.min(prev + 1, 4))}
+            onClick={() => setShowCustomPricesModal(true)}
             style={{
-              background: 'rgba(0, 0, 0, 0.75)',
-              border: '2px dashed #eab308',
+              background: 'rgba(20, 24, 33, 0.9)',
+              border: '1px solid rgba(234, 179, 8, 0.5)',
               color: '#eab308',
               fontFamily: "'Playfair Display', 'Book Antiqua', 'Palatino Linotype', serif",
               fontWeight: '700',
-              fontSize: '1rem',
-              padding: '12px 24px',
+              fontSize: isLandscape ? '0.85rem' : '0.95rem',
+              padding: isLandscape ? '8px 16px' : '12px 24px',
               borderRadius: '0px',
               cursor: 'pointer',
               letterSpacing: '1px',
               textTransform: 'uppercase',
-              width: '100%',
+              flex: 1,
               transition: 'all 0.2s ease',
               boxShadow: '0 5px 15px rgba(0,0,0,0.5)'
             }}
@@ -505,42 +544,12 @@ const SetupScreen = () => {
               e.currentTarget.style.background = 'rgba(234, 179, 8, 0.15)';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
+              e.currentTarget.style.background = 'rgba(20, 24, 33, 0.9)';
             }}
           >
-            + Add Player
+            ⚙️ CUSTOMIZE PROPERTY PRICES
           </button>
-        )}
-
-        {/* Custom Property Prices / House Rules Button */}
-        <button
-          onClick={() => setShowCustomPricesModal(true)}
-          style={{
-            background: 'rgba(20, 24, 33, 0.9)',
-            border: '1px solid rgba(234, 179, 8, 0.5)',
-            color: '#eab308',
-            fontFamily: "'Playfair Display', 'Book Antiqua', 'Palatino Linotype', serif",
-            fontWeight: '700',
-            fontSize: '0.95rem',
-            padding: '12px 24px',
-            borderRadius: '0px',
-            cursor: 'pointer',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            width: '100%',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 5px 15px rgba(0,0,0,0.5)',
-            marginBottom: '15px'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = 'rgba(234, 179, 8, 0.15)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = 'rgba(20, 24, 33, 0.9)';
-          }}
-        >
-          ⚙️ CUSTOMIZE PROPERTY PRICES
-        </button>
+        </div>
 
         {/* Professional Luxury Start Button */}
         <button
@@ -592,14 +601,14 @@ const SetupScreen = () => {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 99999,
-          padding: '20px'
+          padding: isLandscape ? '10px' : '16px'
         }}>
           <div style={{
             background: '#0e1118',
             border: '2px solid var(--dtu-yellow)',
             width: '100%',
-            maxWidth: '650px',
-            maxHeight: '85vh',
+            maxWidth: isLandscape ? '780px' : '650px',
+            maxHeight: isLandscape ? '96vh' : '88vh',
             display: 'flex',
             flexDirection: 'column',
             boxShadow: '0 0 50px rgba(0,0,0,0.9), 0 0 30px rgba(234, 179, 8, 0.2)'
@@ -609,15 +618,16 @@ const SetupScreen = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '20px 24px',
+              padding: isLandscape ? '12px 18px' : '18px 22px',
               borderBottom: '1px solid rgba(255,255,255,0.1)',
-              background: '#141824'
+              background: '#141824',
+              gap: '12px'
             }}>
               <div>
-                <h3 style={{ margin: 0, color: 'var(--dtu-yellow)', fontFamily: "'Playfair Display', serif", fontSize: '1.4rem' }}>
+                <h3 style={{ margin: 0, color: 'var(--dtu-yellow)', fontFamily: "'Playfair Display', serif", fontSize: isLandscape ? '1.2rem' : '1.4rem' }}>
                   CUSTOM PROPERTY PRICES
                 </h3>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+                <span style={{ fontSize: isLandscape ? '0.75rem' : '0.8rem', color: '#94a3b8' }}>
                   Adjust property prices and GO reward before starting the game
                 </span>
               </div>
@@ -627,12 +637,13 @@ const SetupScreen = () => {
                   background: 'transparent',
                   border: '1px solid #f43f5e',
                   color: '#f43f5e',
-                  padding: '6px 12px',
+                  padding: isLandscape ? '5px 10px' : '6px 12px',
                   fontSize: '0.75rem',
                   fontWeight: '700',
                   cursor: 'pointer',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  letterSpacing: '1px',
+                  flexShrink: 0
                 }}
               >
                 Reset to Defaults
@@ -641,11 +652,11 @@ const SetupScreen = () => {
 
             {/* Scrollable Property List */}
             <div style={{
-              padding: '20px 24px',
+              padding: isLandscape ? '12px 18px' : '18px 22px',
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              gap: '12px',
+              gap: isLandscape ? '8px' : '12px',
               flex: 1
             }}>
               {/* Pass GO Reward Rule Card */}
@@ -655,14 +666,14 @@ const SetupScreen = () => {
                 justifyContent: 'space-between',
                 background: 'rgba(234, 179, 8, 0.08)',
                 border: '1px solid var(--dtu-yellow)',
-                padding: '12px 16px',
+                padding: isLandscape ? '8px 12px' : '12px 16px',
                 marginBottom: '4px'
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                  <span style={{ color: 'var(--dtu-yellow)', fontWeight: '800', fontSize: '1rem', letterSpacing: '1px' }}>
+                  <span style={{ color: 'var(--dtu-yellow)', fontWeight: '800', fontSize: isLandscape ? '0.9rem' : '1rem', letterSpacing: '1px' }}>
                     PASSING GO REWARD
                   </span>
-                  <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>
+                  <span style={{ color: '#94a3b8', fontSize: isLandscape ? '0.7rem' : '0.75rem' }}>
                     Money collected when passing Main Gate
                   </span>
                 </div>
@@ -674,12 +685,12 @@ const SetupScreen = () => {
                     value={goReward}
                     onChange={(e) => setGoReward(Math.max(0, parseInt(e.target.value, 10) || 0))}
                     style={{
-                      width: '80px',
-                      padding: '6px 10px',
+                      width: isLandscape ? '70px' : '80px',
+                      padding: isLandscape ? '4px 8px' : '6px 10px',
                       background: '#000000',
                       border: '1px solid var(--dtu-yellow)',
                       color: '#ffffff',
-                      fontSize: '1rem',
+                      fontSize: isLandscape ? '0.9rem' : '1rem',
                       fontWeight: '700',
                       textAlign: 'right',
                       outline: 'none'
@@ -700,60 +711,68 @@ const SetupScreen = () => {
                 PROPERTY PURCHASE PRICES
               </div>
 
-              {purchasableSpaces.map(space => (
-                <div key={space.id} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  padding: '10px 16px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    {space.color && (
-                      <div style={{
-                        width: '14px',
-                        height: '14px',
-                        backgroundColor: space.color,
-                        border: '1px solid rgba(255,255,255,0.3)'
-                      }} />
-                    )}
-                    <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                      <span style={{ color: '#ffffff', fontWeight: '700', fontSize: '1rem' }}>
-                        {space.name}
-                      </span>
-                      <span style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase' }}>
-                        {space.type.toUpperCase()} · SPACE {space.id}
-                      </span>
+              {/* 2-Column Grid in Landscape / 1-Column in Portrait */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isLandscape ? 'repeat(2, minmax(0, 1fr))' : '1fr',
+                gap: isLandscape ? '8px' : '12px'
+              }}>
+                {purchasableSpaces.map(space => (
+                  <div key={space.id} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    padding: isLandscape ? '8px 12px' : '10px 16px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {space.color && (
+                        <div style={{
+                          width: '14px',
+                          height: '14px',
+                          backgroundColor: space.color,
+                          border: '1px solid rgba(255,255,255,0.3)',
+                          flexShrink: 0
+                        }} />
+                      )}
+                      <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                        <span style={{ color: '#ffffff', fontWeight: '700', fontSize: isLandscape ? '0.9rem' : '1rem' }}>
+                          {space.name}
+                        </span>
+                        <span style={{ color: '#64748b', fontSize: isLandscape ? '0.68rem' : '0.75rem', textTransform: 'uppercase' }}>
+                          {space.type.toUpperCase()} · SPACE {space.id}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ color: 'var(--dtu-yellow)', fontWeight: '800' }}>M</span>
+                      <input
+                        type="number"
+                        value={space.price}
+                        onChange={(e) => updatePropertyPrice(space.id, e.target.value)}
+                        style={{
+                          width: isLandscape ? '64px' : '80px',
+                          padding: isLandscape ? '4px 6px' : '6px 10px',
+                          background: '#000000',
+                          border: '1px solid var(--dtu-yellow)',
+                          color: '#ffffff',
+                          fontSize: isLandscape ? '0.85rem' : '1rem',
+                          fontWeight: '700',
+                          textAlign: 'right',
+                          outline: 'none'
+                        }}
+                      />
                     </div>
                   </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--dtu-yellow)', fontWeight: '800' }}>M</span>
-                    <input
-                      type="number"
-                      value={space.price}
-                      onChange={(e) => updatePropertyPrice(space.id, e.target.value)}
-                      style={{
-                        width: '80px',
-                        padding: '6px 10px',
-                        background: '#000000',
-                        border: '1px solid var(--dtu-yellow)',
-                        color: '#ffffff',
-                        fontSize: '1rem',
-                        fontWeight: '700',
-                        textAlign: 'right',
-                        outline: 'none'
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Modal Footer */}
             <div style={{
-              padding: '16px 24px',
+              padding: isLandscape ? '10px 18px' : '16px 24px',
               borderTop: '1px solid rgba(255,255,255,0.1)',
               background: '#141824',
               display: 'flex',
@@ -767,8 +786,8 @@ const SetupScreen = () => {
                   color: '#000000',
                   fontFamily: "'Playfair Display', serif",
                   fontWeight: '800',
-                  fontSize: '1rem',
-                  padding: '12px 32px',
+                  fontSize: isLandscape ? '0.9rem' : '1rem',
+                  padding: isLandscape ? '8px 24px' : '12px 32px',
                   cursor: 'pointer',
                   letterSpacing: '1px',
                   textTransform: 'uppercase'
