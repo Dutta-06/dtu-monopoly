@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useIsMobile, useIsLandscape } from '../hooks/useIsMobile';
+import { useIsPortrait, useIsLandscape } from '../hooks/useIsMobile';
 import { RotateCcw } from 'lucide-react';
 
 const OrientationPrompt = () => {
-  const isMobile = useIsMobile(768);
+  const isPortrait = useIsPortrait();
   const isLandscape = useIsLandscape();
   const [dismissed, setDismissed] = useState(false);
 
-  // If the user rotates to landscape, reset dismissed state so it prompts cleanly if rotated back
+  // If the user rotates to landscape, reset dismissed state so it prompts cleanly if rotated back to portrait
   useEffect(() => {
     if (isLandscape) {
       setDismissed(false);
     }
   }, [isLandscape]);
 
-  if (!isMobile || isLandscape || dismissed) return null;
+  if (!isPortrait || dismissed) return null;
 
   return (
     <div style={{
@@ -23,46 +23,47 @@ const OrientationPrompt = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.92)',
+      backgroundColor: 'rgba(15, 23, 42, 0.95)',
       backdropFilter: 'blur(12px)',
       zIndex: 9999,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '16px',
+      padding: '20px',
       animation: 'fadeInMobile 0.4s ease both'
     }}>
       <div className="glass" style={{
         width: '90%',
         maxWidth: '420px',
-        padding: '24px 20px',
+        padding: '28px 22px',
         textAlign: 'center',
         border: '2px solid var(--dtu-yellow)',
-        boxShadow: '0 0 35px rgba(234, 179, 8, 0.3)',
+        boxShadow: '0 0 40px rgba(234, 179, 8, 0.35)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '12px'
+        gap: '14px'
       }}>
         <div style={{
-          width: '56px',
-          height: '56px',
+          width: '64px',
+          height: '64px',
           borderRadius: '50%',
           background: 'rgba(234, 179, 8, 0.15)',
-          border: '1px solid var(--dtu-yellow)',
+          border: '2px solid var(--dtu-yellow)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'var(--dtu-yellow)',
           marginBottom: '4px'
         }}>
-          <RotateCcw size={30} />
+          <RotateCcw size={34} />
         </div>
 
         <h2 style={{
           margin: 0,
           color: 'var(--dtu-yellow)',
-          fontSize: '1.4rem',
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
           letterSpacing: '0.5px'
         }}>
           Rotate to Landscape
@@ -71,7 +72,7 @@ const OrientationPrompt = () => {
         <p style={{
           margin: 0,
           color: 'var(--text-muted)',
-          fontSize: '0.95rem',
+          fontSize: '1rem',
           lineHeight: '1.4',
           maxWidth: '320px'
         }}>
@@ -82,12 +83,12 @@ const OrientationPrompt = () => {
           className="glass-button"
           onClick={() => setDismissed(true)}
           style={{
-            marginTop: '8px',
-            padding: '8px 16px',
-            fontSize: '0.85rem',
+            marginTop: '10px',
+            padding: '10px 20px',
+            fontSize: '0.9rem',
             color: 'white',
-            borderColor: 'rgba(255, 255, 255, 0.2)',
-            background: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'rgba(255, 255, 255, 0.3)',
+            background: 'rgba(255, 255, 255, 0.1)',
             cursor: 'pointer'
           }}
         >
