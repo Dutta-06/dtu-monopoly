@@ -319,15 +319,15 @@ const SetupScreen = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: isMobile ? '14px' : '20px',
+        gap: isLandscape ? '8px' : (isMobile ? '14px' : '20px'),
         zIndex: 15,
         animation: isMobile ? 'fadeInMobile 0.8s ease 0.2s both' : 'fadeInRegistration 1.4s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both'
       }}>
         {/* Editorial Title - Who's Playing? (Lifted Higher) */}
         <h2 style={{
-          margin: '0 0 18px 0',
+          margin: isLandscape ? '0 0 6px 0' : '0 0 18px 0',
           marginTop: isMobile ? '0px' : '-55px',
-          fontSize: isMobile ? '2rem' : '2.4rem',
+          fontSize: isLandscape ? '1.5rem' : (isMobile ? '2rem' : '2.4rem'),
           fontWeight: '900',
           fontFamily: "'Playfair Display', 'Book Antiqua', 'Palatino Linotype', serif",
           color: '#000000',
@@ -340,8 +340,8 @@ const SetupScreen = () => {
         {/* Dynamic Grid for Adding Players (Starts with 1, up to 4) */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile || playerCount === 1 ? '1fr' : 'repeat(2, 1fr)',
-          gap: '16px',
+          gridTemplateColumns: (isMobile && !isLandscape) || playerCount === 1 ? '1fr' : 'repeat(2, minmax(0, 1fr))',
+          gap: isLandscape ? '8px' : '16px',
           width: '100%'
         }}>
           {names.slice(0, playerCount).map((name, i) => {

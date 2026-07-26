@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { useIsLandscape } from '../hooks/useIsMobile';
 
 const BOARD_PROPERTIES = [
   { name: "DSM", color: "brown", price: 60, rent: 2 },
@@ -38,42 +39,44 @@ const UTILITIES = [
 ];
 
 const Properties = ({ onClose }) => {
+  const isLandscape = useIsLandscape();
+
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       background: 'rgba(0,0,0,0.8)', zIndex: 3000,
       display: 'flex', justifyContent: 'center', alignItems: 'center',
-      padding: 'clamp(10px, 3vw, 20px)'
+      padding: isLandscape ? '6px 12px' : 'clamp(10px, 3vw, 20px)'
     }}>
       <div className="glass" style={{ 
-        width: '100%', maxWidth: '600px', maxHeight: '90vh', 
-        overflowY: 'auto', padding: 'clamp(16px, 4vw, 30px)', position: 'relative'
+        width: '100%', maxWidth: isLandscape ? '700px' : '600px', maxHeight: '95vh', 
+        overflowY: 'auto', padding: isLandscape ? '12px 18px' : 'clamp(16px, 4vw, 30px)', position: 'relative'
       }}>
         
         <button 
           onClick={onClose}
           style={{ 
-            position: 'absolute', top: '20px', right: '20px',
+            position: 'absolute', top: isLandscape ? '10px' : '20px', right: isLandscape ? '10px' : '20px',
             background: 'transparent', border: 'none', color: 'white',
             cursor: 'pointer'
           }}
         >
-          <X size={32} />
+          <X size={isLandscape ? 24 : 32} />
         </button>
 
-        <h2 style={{ marginTop: 0, textAlign: 'center', color: 'var(--dtu-blue)' }}>Property Guide</h2>
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', margin: '0 0 20px 0' }}>
+        <h2 style={{ marginTop: 0, textAlign: 'center', color: 'var(--dtu-blue)', fontSize: isLandscape ? '1.3rem' : '1.8rem', marginBottom: isLandscape ? '4px' : '10px' }}>Property Guide</h2>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', margin: isLandscape ? '0 0 10px 0' : '0 0 20px 0', fontSize: isLandscape ? '0.85rem' : '1rem' }}>
           Reference guide for property deeds and rents.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isLandscape ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: isLandscape ? '8px' : '15px' }}>
           {BOARD_PROPERTIES.map((prop, i) => (
-            <div key={i} className={`glass prop-${prop.color}`} style={{ padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={i} className={`glass prop-${prop.color}`} style={{ padding: isLandscape ? '8px 12px' : '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ margin: '0 0 5px 0' }}>{prop.name}</h3>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>Rent: M{prop.rent}</p>
+                <h3 style={{ margin: isLandscape ? '0 0 2px 0' : '0 0 5px 0', fontSize: isLandscape ? '0.95rem' : '1.1rem' }}>{prop.name}</h3>
+                <p style={{ margin: 0, fontSize: isLandscape ? '0.78rem' : '0.9rem', color: 'var(--text-muted)' }}>Rent: M{prop.rent}</p>
               </div>
-              <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+              <div style={{ fontWeight: 'bold', fontSize: isLandscape ? '1rem' : '1.2rem' }}>
                 M{prop.price}
               </div>
             </div>

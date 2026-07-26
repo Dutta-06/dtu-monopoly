@@ -1,9 +1,11 @@
 import React from 'react';
 import { useGame } from '../context/GameContext';
+import { useIsLandscape } from '../hooks/useIsMobile';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ActionModal = () => {
   const { pendingAction } = useGame();
+  const isLandscape = useIsLandscape();
 
   if (!pendingAction) return null;
 
@@ -15,10 +17,10 @@ const ActionModal = () => {
         exit={{ opacity: 0 }}
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.1)', zIndex: 4000, // Very light background, no blur
-          display: 'flex', justifyContent: 'center', alignItems: 'flex-start', // Align to top
-          paddingTop: '80px', // Push down a bit from the very top
-          pointerEvents: 'auto' // Catch clicks to prevent rolling again
+          background: 'rgba(0,0,0,0.4)', zIndex: 4000,
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          padding: isLandscape ? '6px 12px' : 'clamp(10px, 3vh, 30px)',
+          pointerEvents: 'auto'
         }}
       >
         <motion.div 
@@ -26,21 +28,34 @@ const ActionModal = () => {
           animate={{ scale: 1, y: 0 }}
           className="glass"
           style={{ 
-            width: '90%', maxWidth: '400px', maxHeight: '85vh', overflowY: 'auto',
-            padding: 'clamp(15px, 4vw, 25px)', 
-            textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '15px',
+            width: isLandscape ? '95%' : '90%',
+            maxWidth: isLandscape ? '580px' : '400px',
+            maxHeight: '94vh',
+            overflowY: 'auto',
+            padding: isLandscape ? '10px 16px' : 'clamp(15px, 4vw, 25px)', 
+            textAlign: isLandscape ? 'left' : 'center',
+            display: 'flex',
+            flexDirection: isLandscape ? 'row' : 'column',
+            alignItems: 'center',
+            gap: isLandscape ? '16px' : '15px',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), 0 0 20px rgba(59, 130, 246, 0.3)',
             border: '2px solid rgba(255, 255, 255, 0.2)',
-            backgroundColor: 'rgba(15, 23, 42, 0.95)' // Make it slightly more opaque so text is readable
+            backgroundColor: 'rgba(15, 23, 42, 0.95)'
           }}
         >
           {pendingAction.spaceId !== undefined && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '5px' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexShrink: 0,
+              width: isLandscape ? '40%' : '100%',
+              marginBottom: isLandscape ? 0 : '5px'
+            }}>
               <img 
                 src={`/cards/space-${pendingAction.spaceId}.png`} 
                 alt={pendingAction.title}
                 style={{
-                  maxHeight: '240px',
+                  maxHeight: isLandscape ? '170px' : '240px',
                   maxWidth: '100%',
                   objectFit: 'contain',
                   borderRadius: '6px',
@@ -51,26 +66,28 @@ const ActionModal = () => {
               />
             </div>
           )}
-          <h2 style={{ margin: 0, color: 'var(--dtu-blue)' }}>{pendingAction.title}</h2>
-          <p style={{ fontSize: '1.2rem', margin: 0 }}>{pendingAction.message}</p>
-          
-          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '10px' }}>
-            {pendingAction.onReject && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: isLandscape ? '8px' : '12px', width: '100%', textAlign: isLandscape ? 'left' : 'center' }}>
+            <h2 style={{ margin: 0, color: 'var(--dtu-blue)', fontSize: isLandscape ? '1.2rem' : '1.5rem' }}>{pendingAction.title}</h2>
+            <p style={{ fontSize: isLandscape ? '0.95rem' : '1.2rem', margin: 0, lineHeight: '1.3' }}>{pendingAction.message}</p>
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: isLandscape ? 'flex-start' : 'center', marginTop: isLandscape ? '4px' : '10px' }}>
+              {pendingAction.onReject && (
+                <button 
+                  className="glass-button" 
+                  onClick={pendingAction.onReject}
+                  style={{ flex: 1, background: 'rgba(239, 68, 68, 0.2)', border: '1px solid var(--dtu-red)', padding: isLandscape ? '6px 12px' : undefined, fontSize: isLandscape ? '0.9rem' : undefined }}
+                >
+                  {pendingAction.rejectText || 'Cancel'}
+                </button>
+              )}
               <button 
-                className="glass-button" 
-                onClick={pendingAction.onReject}
-                style={{ flex: 1, background: 'rgba(239, 68, 68, 0.2)', border: '1px solid var(--dtu-red)' }}
+                className="glass-button primary" 
+                onClick={pendingAction.onConfirm}
+                style={{ flex: 1, padding: isLandscape ? '6px 12px' : undefined, fontSize: isLandscape ? '0.9rem' : undefined }}
               >
-                {pendingAction.rejectText || 'Cancel'}
+                {pendingAction.confirmText || 'OK'}
               </button>
-            )}
-            <button 
-              className="glass-button primary" 
-              onClick={pendingAction.onConfirm}
-              style={{ flex: 1 }}
-            >
-              {pendingAction.confirmText || 'OK'}
-            </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>

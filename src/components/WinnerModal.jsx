@@ -1,7 +1,9 @@
 import React from 'react';
 import { useGame } from '../context/GameContext';
 import { Trophy, RotateCcw, X, Award } from 'lucide-react';
+import { useIsLandscape } from '../hooks/useIsMobile';
 const WinnerModal = () => {
+  const isLandscape = useIsLandscape();
   const { 
     players, 
     winnerModalOpen, 
@@ -60,15 +62,15 @@ const WinnerModal = () => {
       <div className="glass" style={{
         width: '100%',
         maxWidth: '520px',
-        maxHeight: '90vh',
+        maxHeight: '94vh',
         overflowY: 'auto',
-        padding: 'clamp(16px, 4vw, 35px) clamp(14px, 4vw, 30px)',
+        padding: isLandscape ? '12px 18px' : 'clamp(16px, 4vw, 35px) clamp(14px, 4vw, 30px)',
         textAlign: 'center',
         border: '2px solid var(--dtu-yellow)',
         boxShadow: '0 0 40px rgba(234, 179, 8, 0.4)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
+        gap: isLandscape ? '10px' : '20px',
         position: 'relative'
       }}>
         
@@ -91,11 +93,11 @@ const WinnerModal = () => {
 
         {/* Title & Winner Banner */}
         <div>
-          <Trophy size={60} color="var(--dtu-yellow)" style={{ margin: '0 auto 10px auto' }} />
-          <h2 style={{ margin: 0, color: 'var(--dtu-yellow)', fontSize: '2rem', letterSpacing: '1px' }}>
+          <Trophy size={isLandscape ? 36 : 60} color="var(--dtu-yellow)" style={{ margin: '0 auto 6px auto' }} />
+          <h2 style={{ margin: 0, color: 'var(--dtu-yellow)', fontSize: isLandscape ? '1.4rem' : '2rem', letterSpacing: '1px' }}>
             GAME OVER
           </h2>
-          <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '1rem' }}>
+          <p style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: isLandscape ? '0.85rem' : '1rem' }}>
             DTU Times Monopoly Edition 72
           </p>
         </div>
