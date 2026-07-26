@@ -7,6 +7,7 @@ import PlayerCard from './components/PlayerCard';
 import Properties from './components/Properties';
 import ActionModal from './components/ActionModal';
 import WinnerModal from './components/WinnerModal';
+import OrientationPrompt from './components/OrientationPrompt';
 import { Map, Trophy } from 'lucide-react';
 
 const MainBoard = () => {
@@ -191,7 +192,12 @@ const MainBoard = () => {
 
 const AppContent = () => {
   const { isGameStarted } = useGame();
-  return isGameStarted ? <MainBoard /> : <SetupScreen />;
+  return (
+    <>
+      {isGameStarted ? <MainBoard /> : <SetupScreen />}
+      <OrientationPrompt />
+    </>
+  );
 };
 
 function App() {
