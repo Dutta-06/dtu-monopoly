@@ -42,16 +42,23 @@ const Properties = ({ onClose }) => {
   const isLandscape = useIsLandscape();
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0,0,0,0.8)', zIndex: 3000,
-      display: 'flex', justifyContent: 'center', alignItems: 'center',
-      padding: isLandscape ? '6px 12px' : 'clamp(10px, 3vw, 20px)'
-    }}>
-      <div className="glass" style={{ 
-        width: '100%', maxWidth: isLandscape ? '700px' : '600px', maxHeight: '95vh', 
-        overflowY: 'auto', padding: isLandscape ? '12px 18px' : 'clamp(16px, 4vw, 30px)', position: 'relative'
-      }}>
+    <div 
+      onClick={onClose}
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'rgba(0,0,0,0.8)', zIndex: 3000,
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        padding: isLandscape ? '6px 12px' : 'clamp(10px, 3vw, 20px)'
+      }}
+    >
+      <div 
+        className="glass" 
+        onClick={(e) => e.stopPropagation()}
+        style={{ 
+          width: '100%', maxWidth: isLandscape ? '700px' : '600px', maxHeight: '95vh', 
+          overflowY: 'auto', padding: isLandscape ? '12px 18px' : 'clamp(16px, 4vw, 30px)', position: 'relative'
+        }}
+      >
         
         <button 
           onClick={onClose}

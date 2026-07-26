@@ -589,30 +589,36 @@ const SetupScreen = () => {
 
       {/* Custom Property Prices Modal */}
       {showCustomPricesModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0, 0, 0, 0.85)',
-          backdropFilter: 'blur(10px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 99999,
-          padding: isLandscape ? '10px' : '16px'
-        }}>
-          <div style={{
-            background: '#0e1118',
-            border: '2px solid var(--dtu-yellow)',
-            width: '100%',
-            maxWidth: isLandscape ? '780px' : '650px',
-            maxHeight: isLandscape ? '96vh' : '88vh',
+        <div 
+          onClick={() => setShowCustomPricesModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(10px)',
             display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 0 50px rgba(0,0,0,0.9), 0 0 30px rgba(234, 179, 8, 0.2)'
-          }}>
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: isLandscape ? '10px' : '16px'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#0e1118',
+              border: '2px solid var(--dtu-yellow)',
+              width: '100%',
+              maxWidth: isLandscape ? '780px' : '650px',
+              maxHeight: isLandscape ? '96vh' : '88vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 0 50px rgba(0,0,0,0.9), 0 0 30px rgba(234, 179, 8, 0.2)'
+            }}
+          >
             {/* Modal Header */}
             <div style={{
               display: 'flex',
