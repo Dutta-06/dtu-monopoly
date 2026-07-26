@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useIsLandscape } from '../hooks/useIsMobile';
+import { useIsMobile, useIsLandscape } from '../hooks/useIsMobile';
 import { RotateCcw } from 'lucide-react';
 
 const OrientationPrompt = () => {
+  const isMobile = useIsMobile(768);
   const isLandscape = useIsLandscape();
   const [dismissed, setDismissed] = useState(false);
 
-  // If the user rotates back to portrait, reset dismissed state
+  // If the user rotates to landscape, reset dismissed state so it prompts cleanly if rotated back
   useEffect(() => {
-    if (!isLandscape) {
+    if (isLandscape) {
       setDismissed(false);
     }
   }, [isLandscape]);
 
-  if (!isLandscape || dismissed) return null;
+  if (!isMobile || isLandscape || dismissed) return null;
 
   return (
     <div style={{
@@ -64,7 +65,7 @@ const OrientationPrompt = () => {
           fontSize: '1.4rem',
           letterSpacing: '0.5px'
         }}>
-          Rotate to Portrait
+          Rotate to Landscape
         </h2>
 
         <p style={{
@@ -74,7 +75,7 @@ const OrientationPrompt = () => {
           lineHeight: '1.4',
           maxWidth: '320px'
         }}>
-          DTU Monopoly is best played in vertical (portrait) orientation. Please rotate your phone for the optimal experience.
+          DTU Monopoly is best experienced in horizontal (landscape) orientation. Please rotate your phone for widescreen play.
         </p>
 
         <button
@@ -90,7 +91,7 @@ const OrientationPrompt = () => {
             cursor: 'pointer'
           }}
         >
-          Continue in Landscape Anyway
+          Continue in Portrait Anyway
         </button>
       </div>
     </div>
