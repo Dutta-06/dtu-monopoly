@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { BOARD_SPACES } from '../data/board';
 import { CHANCE_CARDS, CHEST_CARDS } from '../data/cards';
+import { recordGameStart } from '../lib/supabase';
 
 const GameContext = createContext();
 
@@ -13,19 +14,88 @@ export const GameProvider = ({ children }) => {
   const [propertyOwnership, setPropertyOwnership] = useState({}); // { spaceId: playerId }
   const [propertyLevels, setPropertyLevels] = useState({}); // { spaceId: level } 0, 1, 2
   const [pendingAction, setPendingAction] = useState(null);
+  const [winnerModalOpen, setWinnerModalOpen] = useState(false);
+  const [boardSpaces, setBoardSpaces] = useState(BOARD_SPACES);
+  const [goReward, setGoReward] = useState(200);
 
-  const startGame = (playerNames) => {
-    const newPlayers = playerNames.filter(n => n.trim() !== '').map((name, index) => ({
-      id: index,
-      name,
-      balance: 1500,
-      position: 0,
-      inJail: false,
-      isBankrupt: false,
+  const updatePropertyPrice = (spaceId, newPrice) => {
+    setBoardSpaces(prev => prev.map(space => {
+      if (space.id === spaceId) {
+        return {
+          ...space,
+          price: Math.max(0, parseInt(newPrice, 10) || 0)
+        };
+      }
+      return space;
     }));
+  };
+
+  const resetPropertyPrices = () => {
+    setBoardSpaces(BOARD_SPACES);
+    setGoReward(200);
+  };
+
+  const calculateNetWorth = (playerId) => {
+    const player = players.find(p => p.id === playerId);
+    if (!player) return 0;
+    let propertyValue = 0;
+    boardSpaces.forEach(space => {
+      if (propertyOwnership[space.id] === playerId) {
+        const level = propertyLevels[space.id] || 0;
+        propertyValue += (space.price || 0) + (level * (space.upgradeCost || 0));
+      }
+    });
+    return player.balance + propertyValue;
+  };
+
+  const endGame = () => {
+    setPendingAction({
+      type: 'info',
+      title: 'End Game & Declare Winner?',
+      message: 'Ready to conclude the game and see who has the highest Net Worth (Cash + Property Assets)?',
+      confirmText: 'Yes, End Game!',
+      rejectText: 'Keep Playing',
+      onConfirm: () => {
+        setPendingAction(null);
+        setWinnerModalOpen(true);
+      },
+      onReject: () => {
+        setPendingAction(null);
+      }
+    });
+  };
+
+  const resetGame = () => {
+    setPlayers([]);
+    setIsGameStarted(false);
+    setCurrentPlayerIndex(0);
+    setPropertyOwnership({});
+    setPropertyLevels({});
+    setPendingAction(null);
+    setWinnerModalOpen(false);
+  };
+
+  const startGame = (playerDataList) => {
+    const newPlayers = playerDataList
+      .filter(item => (typeof item === 'string' ? item.trim() !== '' : item.name.trim() !== ''))
+      .map((item, index) => {
+        const name = typeof item === 'string' ? item : item.name;
+        const avatar = typeof item === 'string' ? `/avatar-${index + 1}.png` : item.avatar;
+        return {
+          id: index,
+          name,
+          avatar,
+          balance: 1500,
+          position: 0,
+          inJail: false,
+          isBankrupt: false,
+        };
+      });
     setPlayers(newPlayers);
     setIsGameStarted(true);
     setCurrentPlayerIndex(0);
+    // Record session to Supabase — fire-and-forget, never blocks the game
+    recordGameStart(newPlayers.map(p => p.name));
   };
 
   const getNextValidPlayerIndex = (currentIndex, currentPlayers) => {
@@ -65,7 +135,14 @@ export const GameProvider = ({ children }) => {
       });
       return newLvls;
     });
-    setPlayers(prev => prev.map(p => p.id === playerId ? { ...p, balance: 0, isBankrupt: true } : p));
+    setPlayers(prev => {
+      const updated = prev.map(p => p.id === playerId ? { ...p, balance: 0, isBankrupt: true } : p);
+      const active = updated.filter(p => !p.isBankrupt);
+      if (active.length <= 1) {
+        setTimeout(() => setWinnerModalOpen(true), 500);
+      }
+      return updated;
+    });
   };
 
   // Safe balance updater that returns true if successful, false if bankrupt
@@ -100,18 +177,20 @@ export const GameProvider = ({ children }) => {
   };
 
   const buyProperty = (playerId, spaceId, price) => {
-    if (updateBalance(playerId, -price)) {
-      setPropertyOwnership(prev => ({ ...prev, [spaceId]: playerId }));
-      setPropertyLevels(prev => ({ ...prev, [spaceId]: 0 }));
-      nextTurn();
-    }
+    const p = players.find(player => player.id === playerId);
+    if (!p || p.balance < price) return;
+    updateBalance(playerId, -price);
+    setPropertyOwnership(prev => ({ ...prev, [spaceId]: playerId }));
+    setPropertyLevels(prev => ({ ...prev, [spaceId]: 0 }));
+    nextTurn();
   };
 
   const upgradeProperty = (playerId, spaceId, cost, currentLevel) => {
-    if (updateBalance(playerId, -cost)) {
-      setPropertyLevels(prev => ({ ...prev, [spaceId]: currentLevel + 1 }));
-      nextTurn();
-    }
+    const p = players.find(player => player.id === playerId);
+    if (!p || p.balance < cost) return;
+    updateBalance(playerId, -cost);
+    setPropertyLevels(prev => ({ ...prev, [spaceId]: currentLevel + 1 }));
+    nextTurn();
   };
 
   const payRent = (fromPlayerId, toPlayerId, amount) => {
@@ -121,7 +200,7 @@ export const GameProvider = ({ children }) => {
     }
   };
 
-  const processCardEffect = (player, cardData) => {
+  const processCardEffect = (player, cardData, spaceId) => {
     if (!cardData) { nextTurn(); return; }
 
     const performEffect = () => {
@@ -170,6 +249,7 @@ export const GameProvider = ({ children }) => {
 
     setPendingAction({
       type: 'info',
+      spaceId: spaceId,
       title: cardData.title,
       message: cardData.message,
       confirmText: 'Okay',
@@ -178,12 +258,12 @@ export const GameProvider = ({ children }) => {
   };
 
   const executeMove = (player, newPos, passedGo, totalRoll) => {
-    let goMessage = passedGo ? `Passed GO! Collected M200. ` : '';
-    const space = BOARD_SPACES[newPos];
+    let goMessage = passedGo ? `Passed GO! Collected M${goReward}. ` : '';
+    const space = boardSpaces[newPos];
 
     setPlayers(prev => prev.map(p => {
       if (p.id === player.id) {
-        return { ...p, position: newPos, balance: p.balance + (passedGo ? 200 : 0) };
+        return { ...p, position: newPos, balance: p.balance + (passedGo ? goReward : 0) };
       }
       return p;
     }));
@@ -193,11 +273,26 @@ export const GameProvider = ({ children }) => {
       if (ownerId === undefined) {
         setPendingAction({
           type: 'buy',
+          spaceId: space.id,
           title: `Landed on ${space.name}`,
           message: `${goMessage}It's unowned! Would you like to buy it for M${space.price}?`,
           confirmText: 'Buy',
           rejectText: 'Skip',
-          onConfirm: () => { buyProperty(player.id, space.id, space.price); setPendingAction(null); },
+          onConfirm: () => {
+            if (player.balance < space.price) {
+              setPendingAction({
+                type: 'info',
+                spaceId: space.id,
+                title: 'Not Enough Money!',
+                message: `You need M${space.price} to buy ${space.name}, but you only have M${player.balance}.`,
+                confirmText: 'Okay',
+                onConfirm: () => { nextTurn(); setPendingAction(null); }
+              });
+            } else {
+              buyProperty(player.id, space.id, space.price);
+              setPendingAction(null);
+            }
+          },
           onReject: () => { nextTurn(); setPendingAction(null); }
         });
       } else if (ownerId === player.id) {
@@ -206,16 +301,32 @@ export const GameProvider = ({ children }) => {
           // Can upgrade
           setPendingAction({
             type: 'buy',
+            spaceId: space.id,
             title: `Landed on your ${space.name}`,
             message: `${goMessage}You own this (Level ${currentLevel}). Upgrade to Level ${currentLevel + 1} for M${space.upgradeCost}?`,
             confirmText: 'Upgrade',
             rejectText: 'Skip',
-            onConfirm: () => { upgradeProperty(player.id, space.id, space.upgradeCost, currentLevel); setPendingAction(null); },
+            onConfirm: () => {
+              if (player.balance < space.upgradeCost) {
+                setPendingAction({
+                  type: 'info',
+                  spaceId: space.id,
+                  title: 'Not Enough Money!',
+                  message: `You need M${space.upgradeCost} to upgrade ${space.name}, but you only have M${player.balance}.`,
+                  confirmText: 'Okay',
+                  onConfirm: () => { nextTurn(); setPendingAction(null); }
+                });
+              } else {
+                upgradeProperty(player.id, space.id, space.upgradeCost, currentLevel);
+                setPendingAction(null);
+              }
+            },
             onReject: () => { nextTurn(); setPendingAction(null); }
           });
         } else {
           setPendingAction({
             type: 'info',
+            spaceId: space.id,
             title: `Landed on ${space.name}`,
             message: `${goMessage}You own this. Relax!`,
             confirmText: 'End Turn',
@@ -230,6 +341,7 @@ export const GameProvider = ({ children }) => {
         
         setPendingAction({
           type: 'info',
+          spaceId: space.id,
           title: `Landed on ${space.name}`,
           message: `${goMessage}Owned by ${owner.name} (Level ${level}). You paid M${rent} in rent!`,
           confirmText: 'Pay & End Turn',
@@ -239,6 +351,7 @@ export const GameProvider = ({ children }) => {
     } else if (space.type === 'tax') {
       setPendingAction({
         type: 'info',
+        spaceId: space.id,
         title: `Tax: ${space.name}`,
         message: `${goMessage}Pay M${space.amount}.`,
         confirmText: 'Pay & End Turn',
@@ -247,9 +360,10 @@ export const GameProvider = ({ children }) => {
     } else if (space.type === 'gotojail') {
       setPendingAction({
         type: 'info',
-        title: `Detained!`,
-        message: `Go directly to jail. Do not pass GO, do not collect M200.`,
-        confirmText: 'Go to Jail',
+        spaceId: space.id,
+        title: `Detention!`,
+        message: `Go directly to Fail. Do not pass GO, do not collect M200.`,
+        confirmText: 'Go to Fail',
         onConfirm: () => {
           setPlayers(prev => prev.map(p => p.id === player.id ? { ...p, position: 10, inJail: true } : p));
           nextTurn();
@@ -258,13 +372,14 @@ export const GameProvider = ({ children }) => {
       });
     } else if (space.type === 'chance') {
       const card = CHANCE_CARDS[totalRoll];
-      processCardEffect(player, card);
+      processCardEffect(player, card, space.id);
     } else if (space.type === 'chest') {
       const card = CHEST_CARDS[totalRoll];
-      processCardEffect(player, card);
+      processCardEffect(player, card, space.id);
     } else {
       setPendingAction({
         type: 'info',
+        spaceId: space.id,
         title: `Landed on ${space.name}`,
         message: `${goMessage}Take a breather.`,
         confirmText: 'End Turn',
@@ -281,12 +396,12 @@ export const GameProvider = ({ children }) => {
       if (isDouble) {
         setPlayers(prev => prev.map(p => p.id === player.id ? { ...p, inJail: false } : p));
         setPendingAction({
-          type: 'info', title: 'Escaped Jail!', message: 'You rolled doubles! You are free. Roll again next turn.',
+          type: 'info', title: 'Escaped Fail!', message: 'You rolled doubles! You are free. Roll again next turn.',
           confirmText: 'End Turn', onConfirm: () => { nextTurn(); setPendingAction(null); }
         });
       } else {
         setPendingAction({
-          type: 'info', title: 'Still in Jail', message: 'You did not roll doubles.',
+          type: 'info', title: 'Still in Fail', message: 'You did not roll doubles.',
           confirmText: 'End Turn', onConfirm: () => { nextTurn(); setPendingAction(null); }
         });
       }
@@ -311,10 +426,20 @@ export const GameProvider = ({ children }) => {
       propertyOwnership,
       propertyLevels,
       pendingAction,
+      winnerModalOpen,
+      setWinnerModalOpen,
+      calculateNetWorth,
+      endGame,
+      resetGame,
       startGame,
       updateBalance,
       handleRoll,
-      nextTurn
+      nextTurn,
+      boardSpaces,
+      updatePropertyPrice,
+      resetPropertyPrices,
+      goReward,
+      setGoReward
     }}>
       {children}
     </GameContext.Provider>

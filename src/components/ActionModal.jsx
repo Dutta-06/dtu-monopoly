@@ -33,6 +33,23 @@ const ActionModal = () => {
             backgroundColor: 'rgba(15, 23, 42, 0.95)' // Make it slightly more opaque so text is readable
           }}
         >
+          {pendingAction.spaceId !== undefined && (
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '5px' }}>
+              <img 
+                src={`/cards/space-${pendingAction.spaceId}.png`} 
+                alt={pendingAction.title}
+                style={{
+                  maxHeight: '240px',
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                  borderRadius: '6px',
+                  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.7)',
+                  border: '2px solid rgba(255, 255, 255, 0.2)',
+                  backgroundColor: '#000'
+                }}
+              />
+            </div>
+          )}
           <h2 style={{ margin: 0, color: 'var(--dtu-blue)' }}>{pendingAction.title}</h2>
           <p style={{ fontSize: '1.2rem', margin: 0 }}>{pendingAction.message}</p>
           

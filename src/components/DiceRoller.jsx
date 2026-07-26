@@ -14,17 +14,17 @@ const DiceFace = ({ value }) => {
 
   return (
     <div style={{
-      width: '100px',
-      height: '100px',
+      width: 'var(--dice-size)',
+      height: 'var(--dice-size)',
       backgroundColor: 'white',
-      borderRadius: '16px',
+      borderRadius: 'clamp(8px, 1.5vw, 16px)',
       position: 'relative',
       boxShadow: 'inset 0 0 15px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.4)',
-      padding: '16px'
+      padding: 'clamp(10px, 2vw, 16px)'
     }}>
       {dots[value].map((pos, i) => {
         let style = {
-          position: 'absolute', width: '18px', height: '18px',
+          position: 'absolute', width: 'var(--dot-size)', height: 'var(--dot-size)',
           backgroundColor: '#1e293b', borderRadius: '50%', transform: 'translate(-50%, -50%)'
         };
         if (pos.includes('top')) style.top = '25%';
@@ -45,11 +45,12 @@ const DiceRoller = () => {
   const [dice1, setDice1] = useState(1);
   const [dice2, setDice2] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
+  const [isWaitingForResult, setIsWaitingForResult] = useState(false);
 
   const currentPlayer = players[currentPlayerIndex];
 
   const rollDice = () => {
-    if (isRolling || pendingAction) return;
+    if (isRolling || isWaitingForResult || pendingAction) return;
     
     setIsRolling(true);
 
@@ -65,22 +66,26 @@ const DiceRoller = () => {
         setDice1(d1);
         setDice2(d2);
         setIsRolling(false);
+        setIsWaitingForResult(true);
         
-        // Trigger the board logic
-        handleRoll(d1 + d2, d1 === d2);
+        // Wait 1 second so players can see the dice roll result before opening the card pop up
+        setTimeout(() => {
+          handleRoll(d1 + d2, d1 === d2);
+          setIsWaitingForResult(false);
+        }, 1000);
       }
     }, 50);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(12px, 3vw, 30px)' }}>
       
       <div style={{ textAlign: 'center' }}>
-        <h3 style={{ margin: '0 0 5px 0', color: 'var(--text-muted)' }}>Current Turn</h3>
-        <h2 style={{ margin: 0, color: 'var(--dtu-yellow)', fontSize: '2rem' }}>{currentPlayer?.name}</h2>
+        <h3 style={{ margin: '0 0 3px 0', color: 'var(--text-muted)', fontSize: 'clamp(0.75rem, 2vw, 1rem)' }}>Current Turn</h3>
+        <h2 style={{ margin: 0, color: 'var(--dtu-yellow)', fontSize: 'clamp(1.2rem, 4vw, 2rem)' }}>{currentPlayer?.name}</h2>
       </div>
 
-      <div style={{ display: 'flex', gap: '30px' }}>
+      <div style={{ display: 'flex', gap: 'clamp(12px, 3vw, 30px)' }}>
         <motion.div animate={{ rotate: isRolling ? [0, 90, 180, 270, 360] : 0 }} transition={{ duration: 0.3, repeat: isRolling ? Infinity : 0 }}>
           <DiceFace value={dice1} />
         </motion.div>
@@ -92,10 +97,10 @@ const DiceRoller = () => {
       <button 
         className="glass-button primary"
         onClick={rollDice}
-        disabled={isRolling || pendingAction}
-        style={{ fontSize: '1.2rem', padding: '16px 48px', opacity: (isRolling || pendingAction) ? 0.5 : 1 }}
+        disabled={isRolling || isWaitingForResult || pendingAction}
+        style={{ fontSize: '1.2rem', padding: '16px 48px', opacity: (isRolling || isWaitingForResult || pendingAction) ? 0.5 : 1 }}
       >
-        {isRolling ? 'Rolling...' : 'ROLL DICE'}
+        {isRolling ? 'Rolling...' : isWaitingForResult ? 'Moving...' : 'ROLL DICE'}
       </button>
 
     </div>
