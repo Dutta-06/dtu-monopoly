@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useIsMobile, useIsLandscape } from '../hooks/useIsMobile';
 import { Play } from 'lucide-react';
 
 const SetupScreen = () => {
   const { startGame, boardSpaces, updatePropertyPrice, resetPropertyPrices, goReward, setGoReward } = useGame();
   const isMobile = useIsMobile(768);
+  const isLandscape = useIsLandscape();
   const [playerCount, setPlayerCount] = useState(1);
   const [names, setNames] = useState(['', '', '', '']);
   const [avatarIndices, setAvatarIndices] = useState([0, 1, 2, 3]);
@@ -293,7 +294,7 @@ const SetupScreen = () => {
         textAlign: 'center',
         zIndex: 10,
         width: '100%',
-        maxWidth: isMobile ? '260px' : '460px',
+        maxWidth: isLandscape ? '180px' : (isMobile ? '260px' : '460px'),
         margin: isMobile ? '0 auto 6px auto' : 0,
         animation: isMobile ? 'fadeInMobile 0.8s ease both' : 'zoomInHeader 2.4s cubic-bezier(0.16, 1, 0.3, 1) both'
       }}>

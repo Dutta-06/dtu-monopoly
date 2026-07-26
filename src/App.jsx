@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GameProvider, useGame } from './context/GameContext';
-import { useIsMobile } from './hooks/useIsMobile';
+import { useIsMobile, useIsLandscape } from './hooks/useIsMobile';
 import SetupScreen from './components/SetupScreen';
 import DiceRoller from './components/DiceRoller';
 import PlayerCard from './components/PlayerCard';
@@ -13,6 +13,7 @@ const MainBoard = () => {
   const { players, currentPlayerIndex, endGame, boardSpaces } = useGame();
   const [showProperties, setShowProperties] = useState(false);
   const isMobile = useIsMobile(768);
+  const isLandscape = useIsLandscape();
 
   const activePlayer = players[currentPlayerIndex];
   const playerPos = activePlayer?.position || 0;
@@ -30,8 +31,10 @@ const MainBoard = () => {
       overflowX: 'hidden',
       boxSizing: 'border-box',
       display: isMobile ? 'flex' : 'block',
-      flexDirection: isMobile ? 'column' : 'row',
-      padding: isMobile ? '8px 8px 85px 8px' : 0
+      flexDirection: isMobile ? (isLandscape ? 'row' : 'column') : 'row',
+      alignItems: isMobile && isLandscape ? 'center' : 'stretch',
+      justifyContent: isMobile && isLandscape ? 'space-around' : 'flex-start',
+      padding: isMobile ? (isLandscape ? '8px 8px 65px 8px' : '8px 8px 85px 8px') : 0
     }}>
 
       {/* Players Rendering: Mobile 2-Column Top Grid vs Desktop 4-Corners */}
@@ -40,10 +43,10 @@ const MainBoard = () => {
           display: 'grid',
           gridTemplateColumns: players.length > 1 ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
           gap: '6px',
-          width: '100%',
-          maxWidth: '100%',
+          width: isLandscape ? '48%' : '100%',
+          maxWidth: isLandscape ? '48%' : '100%',
           boxSizing: 'border-box',
-          marginBottom: '10px',
+          marginBottom: isLandscape ? 0 : '10px',
           zIndex: 10
         }}>
           {players.map((player, index) => (
@@ -66,8 +69,10 @@ const MainBoard = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        flex: isMobile ? 1 : 'initial',
-        minHeight: isMobile ? '240px' : 'auto',
+        width: isMobile && isLandscape ? '48%' : 'auto',
+        maxWidth: isMobile && isLandscape ? '48%' : 'auto',
+        flex: isMobile && !isLandscape ? 1 : 'initial',
+        minHeight: isMobile ? (isLandscape ? '180px' : '240px') : 'auto',
         margin: isMobile ? '10px 0' : 0,
         zIndex: 5
       }}>
@@ -76,8 +81,8 @@ const MainBoard = () => {
           alt="DTU Monopoly"
           style={{
             width: '100%',
-            maxWidth: isMobile ? '220px' : 'clamp(200px, 45vw, 380px)',
-            margin: '0 0 10px 0'
+            maxWidth: isMobile ? (isLandscape ? '135px' : '220px') : 'clamp(200px, 45vw, 380px)',
+            margin: isLandscape ? '0 0 4px 0' : '0 0 10px 0'
           }}
         />
 
@@ -89,15 +94,15 @@ const MainBoard = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: 'clamp(38px, 7vw, 54px)',
-            height: 'clamp(38px, 7vw, 54px)',
+            width: isLandscape ? '38px' : 'clamp(38px, 7vw, 54px)',
+            height: isLandscape ? '38px' : 'clamp(38px, 7vw, 54px)',
             background: 'radial-gradient(circle, rgba(20,24,33,0.95) 0%, rgba(10,12,18,0.95) 100%)',
             border: `2px solid ${activePlayer.color || '#eab308'}`,
             color: activePlayer.color || '#eab308',
             borderRadius: '50%',
             fontWeight: '900',
-            fontSize: 'clamp(1.4rem, 3.5vw, 2rem)',
-            marginTop: 'clamp(10px, 2vw, 20px)',
+            fontSize: isLandscape ? '1.2rem' : 'clamp(1.4rem, 3.5vw, 2rem)',
+            marginTop: isLandscape ? '6px' : 'clamp(10px, 2vw, 20px)',
             transform: `rotate(${boardAngleDeg}deg)`,
             transition: 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, color 0.3s ease',
             boxShadow: `0 0 20px ${activePlayer.color || '#eab308'}66, inset 0 0 10px rgba(0,0,0,0.8)`
