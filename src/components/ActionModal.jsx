@@ -26,7 +26,8 @@ const ActionModal = () => {
           animate={{ scale: 1, y: 0 }}
           className="glass"
           style={{ 
-            width: '90%', maxWidth: '400px', padding: '25px', 
+            width: '90%', maxWidth: '400px', maxHeight: '85vh', overflowY: 'auto',
+            padding: 'clamp(15px, 4vw, 25px)', 
             textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '15px',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), 0 0 20px rgba(59, 130, 246, 0.3)',
             border: '2px solid rgba(255, 255, 255, 0.2)',

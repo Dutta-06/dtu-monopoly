@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { Plus, Minus } from 'lucide-react';
-const PlayerCard = ({ player, position }) => {
+const PlayerCard = ({ player, position, isMobile }) => {
   const { updateBalance, propertyOwnership, propertyLevels, currentPlayerIndex, players, boardSpaces } = useGame();
   const [amount, setAmount] = useState('');
 
@@ -23,7 +23,20 @@ const PlayerCard = ({ player, position }) => {
   const ownedProps = boardSpaces.filter(space => propertyOwnership[space.id] === player.id);
 
   // Determine corner styling
-  const cornerStyles = {
+  const cornerStyles = isMobile ? {
+    position: 'relative',
+    width: '100%',
+    padding: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    zIndex: 10,
+    border: isBankrupt ? '1px solid #334155' : (isCurrentTurn ? '2px solid var(--dtu-yellow)' : '1px solid var(--border-card)'),
+    boxShadow: isBankrupt ? 'none' : (isCurrentTurn ? '0 0 15px rgba(234, 179, 8, 0.4)' : 'var(--glass-shadow)'),
+    transition: 'all 0.3s ease',
+    opacity: isBankrupt ? 0.5 : 1,
+    filter: isBankrupt ? 'grayscale(100%)' : 'none'
+  } : {
     position: 'absolute',
     width: 'var(--card-width)',
     padding: 'var(--card-padding)',
@@ -38,10 +51,12 @@ const PlayerCard = ({ player, position }) => {
     filter: isBankrupt ? 'grayscale(100%)' : 'none'
   };
 
-  if (position === 0) { cornerStyles.top = '10px'; cornerStyles.left = '10px'; }   // Top Left
-  if (position === 1) { cornerStyles.top = '10px'; cornerStyles.right = '10px'; }  // Top Right
-  if (position === 2) { cornerStyles.bottom = '10px'; cornerStyles.left = '10px'; } // Bottom Left
-  if (position === 3) { cornerStyles.bottom = '10px'; cornerStyles.right = '10px'; } // Bottom Right
+  if (!isMobile) {
+    if (position === 0) { cornerStyles.top = '10px'; cornerStyles.left = '10px'; }   // Top Left
+    if (position === 1) { cornerStyles.top = '10px'; cornerStyles.right = '10px'; }  // Top Right
+    if (position === 2) { cornerStyles.bottom = '10px'; cornerStyles.left = '10px'; } // Bottom Left
+    if (position === 3) { cornerStyles.bottom = '10px'; cornerStyles.right = '10px'; } // Bottom Right
+  }
 
   return (
     <div className="glass" style={cornerStyles}>

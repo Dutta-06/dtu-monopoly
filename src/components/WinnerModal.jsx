@@ -55,12 +55,14 @@ const WinnerModal = () => {
       justifyContent: 'center',
       zIndex: 100,
       backdropFilter: 'blur(10px)',
-      padding: '20px'
+      padding: 'clamp(10px, 3vw, 20px)'
     }}>
       <div className="glass" style={{
         width: '100%',
         maxWidth: '520px',
-        padding: '35px 30px',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        padding: 'clamp(16px, 4vw, 35px) clamp(14px, 4vw, 30px)',
         textAlign: 'center',
         border: '2px solid var(--dtu-yellow)',
         boxShadow: '0 0 40px rgba(234, 179, 8, 0.4)',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { GameProvider, useGame } from './context/GameContext';
+import { useIsMobile } from './hooks/useIsMobile';
 import SetupScreen from './components/SetupScreen';
 import DiceRoller from './components/DiceRoller';
 import PlayerCard from './components/PlayerCard';
@@ -7,9 +8,11 @@ import Properties from './components/Properties';
 import ActionModal from './components/ActionModal';
 import WinnerModal from './components/WinnerModal';
 import { Map, Trophy } from 'lucide-react';
+
 const MainBoard = () => {
   const { players, currentPlayerIndex, endGame, boardSpaces } = useGame();
   const [showProperties, setShowProperties] = useState(false);
+  const isMobile = useIsMobile(768);
 
   const activePlayer = players[currentPlayerIndex];
   const playerPos = activePlayer?.position || 0;
@@ -18,22 +21,60 @@ const MainBoard = () => {
   const boardAngleDeg = 45 + (playerPos * 9);
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div style={{
+      position: 'relative',
+      width: '100vw',
+      height: '100vh',
+      overflow: isMobile ? 'auto' : 'hidden',
+      overflowX: 'hidden',
+      display: isMobile ? 'flex' : 'block',
+      flexDirection: isMobile ? 'column' : 'row',
+      padding: isMobile ? '12px 12px 85px 12px' : 0
+    }}>
 
-      {/* 4 Corner Player Cards */}
-      {players.map((player, index) => (
-        <PlayerCard key={player.id} player={player} position={index} />
-      ))}
+      {/* Players Rendering: Mobile 2-Column Top Grid vs Desktop 4-Corners */}
+      {isMobile ? (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: players.length > 1 ? 'repeat(2, 1fr)' : '1fr',
+          gap: '8px',
+          width: '100%',
+          marginBottom: '16px',
+          zIndex: 10
+        }}>
+          {players.map((player, index) => (
+            <PlayerCard key={player.id} player={player} position={index} isMobile={true} />
+          ))}
+        </div>
+      ) : (
+        players.map((player, index) => (
+          <PlayerCard key={player.id} player={player} position={index} isMobile={false} />
+        ))
+      )}
 
       {/* Centerpiece: Digital Dice & Directional Turn Arrow */}
       <div style={{
-        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 5
+        position: isMobile ? 'relative' : 'absolute',
+        top: isMobile ? 'auto' : '50%',
+        left: isMobile ? 'auto' : '50%',
+        transform: isMobile ? 'none' : 'translate(-50%, -50%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: isMobile ? 1 : 'initial',
+        minHeight: isMobile ? '240px' : 'auto',
+        margin: isMobile ? '10px 0' : 0,
+        zIndex: 5
       }}>
         <img
           src="/header-logo.png"
           alt="DTU Monopoly"
-          style={{ width: '100%', maxWidth: 'clamp(200px, 45vw, 380px)', margin: '0 0 10px 0' }}
+          style={{
+            width: '100%',
+            maxWidth: isMobile ? '220px' : 'clamp(200px, 45vw, 380px)',
+            margin: '0 0 10px 0'
+          }}
         />
 
         <DiceRoller />
@@ -62,18 +103,43 @@ const MainBoard = () => {
         )}
       </div>
 
-      {/* Floating Bottom Bar: Property Guide & End Game */}
-      <div style={{
-        position: 'absolute', bottom: 'max(16px, env(safe-area-inset-bottom, 16px))', left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', alignItems: 'center', gap: '10px', zIndex: 20,
-        flexWrap: 'wrap', justifyContent: 'center'
+      {/* Floating Bottom Bar: Fixed Native App Toolbar on Mobile vs Floating on Desktop */}
+      <div style={isMobile ? {
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: 'rgba(15, 23, 42, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '10px 16px',
+        paddingBottom: 'max(10px, env(safe-area-inset-bottom, 10px))',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+        zIndex: 100
+      } : {
+        position: 'absolute',
+        bottom: 'max(16px, env(safe-area-inset-bottom, 16px))',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        zIndex: 20,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
       }}>
         <button
           className="glass-button"
           onClick={() => setShowProperties(true)}
           style={{
-            display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'clamp(0.8rem, 2vw, 1.1rem)',
-            padding: 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)'
+            display: 'flex', alignItems: 'center', gap: '8px',
+            fontSize: isMobile ? '0.9rem' : 'clamp(0.8rem, 2vw, 1.1rem)',
+            padding: isMobile ? '10px 16px' : 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
+            flex: isMobile ? 1 : 'initial',
+            justifyContent: 'center'
           }}
         >
           <Map size={18} />
@@ -83,9 +149,12 @@ const MainBoard = () => {
           className="glass-button"
           onClick={endGame}
           style={{
-            display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'clamp(0.8rem, 2vw, 1.1rem)',
-            padding: 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
-            border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171'
+            display: 'flex', alignItems: 'center', gap: '8px',
+            fontSize: isMobile ? '0.9rem' : 'clamp(0.8rem, 2vw, 1.1rem)',
+            padding: isMobile ? '10px 16px' : 'clamp(8px, 1.5vw, 12px) clamp(12px, 2.5vw, 24px)',
+            border: '1px solid rgba(239, 68, 68, 0.5)', color: '#f87171',
+            flex: isMobile ? 1 : 'initial',
+            justifyContent: 'center'
           }}
         >
           <Trophy size={18} />

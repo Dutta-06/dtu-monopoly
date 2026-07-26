@@ -43,11 +43,11 @@ const Properties = ({ onClose }) => {
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       background: 'rgba(0,0,0,0.8)', zIndex: 3000,
       display: 'flex', justifyContent: 'center', alignItems: 'center',
-      padding: '20px'
+      padding: 'clamp(10px, 3vw, 20px)'
     }}>
       <div className="glass" style={{ 
         width: '100%', maxWidth: '600px', maxHeight: '90vh', 
-        overflowY: 'auto', padding: '30px', position: 'relative'
+        overflowY: 'auto', padding: 'clamp(16px, 4vw, 30px)', position: 'relative'
       }}>
         
         <button 

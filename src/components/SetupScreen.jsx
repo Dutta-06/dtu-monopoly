@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { Play } from 'lucide-react';
 
 const SetupScreen = () => {
   const { startGame, boardSpaces, updatePropertyPrice, resetPropertyPrices, goReward, setGoReward } = useGame();
+  const isMobile = useIsMobile(768);
   const [playerCount, setPlayerCount] = useState(1);
   const [names, setNames] = useState(['', '', '', '']);
   const [avatarIndices, setAvatarIndices] = useState([0, 1, 2, 3]);
@@ -222,42 +224,46 @@ const SetupScreen = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: isMobile ? 'flex-start' : 'center',
       minHeight: '100vh',
       gap: '20px',
       width: '100vw',
-      overflow: 'hidden',
-      padding: '20px'
+      overflow: isMobile ? 'auto' : 'hidden',
+      overflowX: 'hidden',
+      padding: isMobile ? '16px 12px 40px 12px' : '20px'
     }}>
       
       {/* Top Right Corner: Made with Love BY DTU Times */}
       <div style={{
-        position: 'absolute',
-        top: '25px',
-        right: '30px',
+        position: isMobile ? 'relative' : 'absolute',
+        top: isMobile ? 'auto' : '25px',
+        right: isMobile ? 'auto' : '30px',
         display: 'flex',
         alignItems: 'center',
         gap: '14px',
+        margin: isMobile ? '0 auto 8px auto' : 0,
         zIndex: 20
       }}>
-        <div style={{ textAlign: 'right', lineHeight: '1.2' }}>
+        <div style={{ textAlign: isMobile ? 'center' : 'right', lineHeight: '1.2' }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Made with Love</div>
           <div style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--dtu-yellow)', letterSpacing: '0.5px' }}>BY DTU Times</div>
         </div>
-        <img
-          src="/dtu-times-logo.png"
-          alt="DTU Times Logo"
+        <img 
+          src="/dtu-times-logo.png" 
+          alt="DTU Times Logo" 
           style={{ height: '52px', width: 'auto', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
         />
       </div>
 
       {/* Bottom Right Corner: Credit & GitHub Repo */}
       <div style={{
-        position: 'absolute',
-        bottom: '25px',
-        right: '30px',
+        position: isMobile ? 'relative' : 'absolute',
+        bottom: isMobile ? 'auto' : '25px',
+        right: isMobile ? 'auto' : '30px',
         fontSize: '0.95rem',
         color: 'var(--text-muted)',
+        margin: isMobile ? '10px auto 0 auto' : 0,
+        order: isMobile ? 10 : 0,
         zIndex: 20
       }}>
         Odwitiyo Dutta |{' '}
@@ -275,19 +281,20 @@ const SetupScreen = () => {
         </a>
       </div>
 
-      {/* 4 Quarter Center Avatar Selectors (Emerge when name is entered) */}
-      {names.map((_, i) => renderAvatarCard(i))}
+      {/* 4 Quarter Center Avatar Selectors (Emerge when name is entered) - DESKTOP ONLY */}
+      {!isMobile && names.map((_, i) => renderAvatarCard(i))}
 
       {/* Header Logo Banner - Cinematic Zoom-In Animation */}
       <div style={{
-        position: 'absolute',
-        top: '18px',
-        left: '50%',
-        transform: 'translateX(-50%)',
+        position: isMobile ? 'relative' : 'absolute',
+        top: isMobile ? 'auto' : '18px',
+        left: isMobile ? 'auto' : '50%',
+        transform: isMobile ? 'none' : 'translateX(-50%)',
         textAlign: 'center',
         zIndex: 10,
         width: '100%',
-        maxWidth: '460px',
+        maxWidth: isMobile ? '260px' : '460px',
+        margin: isMobile ? '0 auto 6px auto' : 0,
         animation: 'zoomInHeader 2.4s cubic-bezier(0.16, 1, 0.3, 1) both'
       }}>
         <img 
@@ -302,16 +309,16 @@ const SetupScreen = () => {
 
       {/* Centered Registration Hub - Emerges from Nothingness after Header Zooms */}
       <div style={{
-        position: 'absolute',
-        top: '55%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '90%',
+        position: isMobile ? 'relative' : 'absolute',
+        top: isMobile ? 'auto' : '55%',
+        left: isMobile ? 'auto' : '50%',
+        transform: isMobile ? 'none' : 'translate(-50%, -50%)',
+        width: isMobile ? '100%' : '90%',
         maxWidth: '520px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '20px',
+        gap: isMobile ? '14px' : '20px',
         zIndex: 15,
         animation: 'fadeInRegistration 1.4s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both'
       }}>
@@ -332,7 +339,7 @@ const SetupScreen = () => {
         {/* Dynamic Grid for Adding Players (Starts with 1, up to 4) */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: playerCount === 1 ? '1fr' : 'repeat(2, 1fr)',
+          gridTemplateColumns: isMobile || playerCount === 1 ? '1fr' : 'repeat(2, 1fr)',
           gap: '16px',
           width: '100%'
         }}>
@@ -388,6 +395,86 @@ const SetupScreen = () => {
                     transition: 'all 0.2s ease'
                   }}
                 />
+
+                {isMobile && (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginTop: '12px',
+                    paddingTop: '10px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.15)'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                      <button
+                        type="button"
+                        onClick={() => prevAvatar(i)}
+                        disabled={isAvatarSelected[i]}
+                        style={{
+                          background: 'rgba(255,255,255,0.1)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          color: '#fff',
+                          padding: '6px 14px',
+                          fontSize: '1.2rem',
+                          fontWeight: 'bold',
+                          cursor: isAvatarSelected[i] ? 'not-allowed' : 'pointer',
+                          opacity: isAvatarSelected[i] ? 0.3 : 1
+                        }}
+                      >
+                        &#8249;
+                      </button>
+
+                      <img
+                        src={`/avatar-${avatarIndices[i] + 1}.png`}
+                        alt="Avatar"
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          objectFit: 'cover',
+                          border: isAvatarSelected[i] ? '2px solid #22c55e' : `1px solid ${accent.color}`,
+                          boxShadow: isAvatarSelected[i] ? '0 0 10px #22c55e' : 'none'
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => nextAvatar(i)}
+                        disabled={isAvatarSelected[i]}
+                        style={{
+                          background: 'rgba(255,255,255,0.1)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          color: '#fff',
+                          padding: '6px 14px',
+                          fontSize: '1.2rem',
+                          fontWeight: 'bold',
+                          cursor: isAvatarSelected[i] ? 'not-allowed' : 'pointer',
+                          opacity: isAvatarSelected[i] ? 0.3 : 1
+                        }}
+                      >
+                        &#8250;
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleSelectAvatar(i)}
+                      style={{
+                        background: isAvatarSelected[i] ? '#22c55e' : accent.color,
+                        color: '#000000',
+                        border: 'none',
+                        fontWeight: '800',
+                        fontSize: '0.8rem',
+                        padding: '8px 16px',
+                        cursor: 'pointer',
+                        width: '100%',
+                        letterSpacing: '1px'
+                      }}
+                    >
+                      {isAvatarSelected[i] ? 'SELECTED ✓' : 'SELECT AVATAR'}
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

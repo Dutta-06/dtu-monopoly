@@ -32,18 +32,20 @@
 }
 
 html {
-  /* Prevent iOS bounce / elastic scroll */
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
-  height: 100%;
-  overflow: hidden;
-  touch-action: none;            /* Prevent accidental scroll/zoom during game */
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  touch-action: manipulation;    /* Fast tap response & allow vertical scroll */
   user-select: none;             /* Prevent text selection on long-press */
   -webkit-user-select: none;
 
@@ -54,8 +56,9 @@ body {
 }
 
 #root {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
