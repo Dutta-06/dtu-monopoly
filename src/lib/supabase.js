@@ -1,7 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL_FALLBACK = 'https://lfiixcxfudejewwuzxow.supabase.co';
+const SUPABASE_ANON_KEY_FALLBACK = 'sb_publishable_lJsL6P_eUIqshp1wtXhd6A_0ogZLrZx';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || SUPABASE_URL_FALLBACK;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || SUPABASE_ANON_KEY_FALLBACK;
 
 // Create client only if credentials are present
 const supabase = (supabaseUrl && supabaseAnonKey)
